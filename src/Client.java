@@ -59,8 +59,6 @@ public class Client {
     public void start() throws IOException, ClassNotFoundException {
         try{
             clientSocket = new Socket("localhost", 1024);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
