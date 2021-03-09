@@ -2,12 +2,15 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Client {
-    private Socket clientSocket = null;
-    ObjectInputStream ois;
-    ObjectOutputStream ous;
-    //ArrayList<String> actions;
+    Socket clientSocket = null;
+    Socket clientSocketScheduler = null;
+    ObjectInputStream objectInputStream;
+    ObjectOutputStream objectOutputStream;
+    ObjectInputStream objectInputStreamScheduler;
+    ObjectOutputStream objectOutputStreamScheduler;
 
     /*public class ProcessList implements Runnable {
 
@@ -32,11 +35,11 @@ public class Client {
 
                     str = actions.get(0);
                     chooseMethod(str);
-                    message = (String) ois.readObject();
+                    message = (String) objectInputStream.readObject();
                     String[] arr = message.split("_");
                     while(arr[0].equals("Alert")){
                         System.out.println(arr[1]); // вызвать метод вывода этой строки во view
-                        message = (String) ois.readObject();
+                        message = (String) objectInputStream.readObject();
                         arr = message.split("_");
                     }
                     System.out.println(arr[1]);
@@ -52,82 +55,86 @@ public class Client {
     }*/
 
     public Client() throws IOException, ClassNotFoundException {
-       // actions = new ArrayList<>();
+        // actions = new ArrayList<>();
         start();
     }
 
+    public ObjectInputStream getObjectInputStreamScheduler() {
+        return objectInputStreamScheduler;
+    }
+
+    public ObjectOutputStream getObjectOutputStreamScheduler() {
+        return objectOutputStreamScheduler;
+    }
+
     public void start() throws IOException, ClassNotFoundException {
-        try{
+        try {
             clientSocket = new Socket("localhost", 1024);
+            clientSocketScheduler = new Socket("localhost", 1025);
+            objectOutputStreamScheduler = new ObjectOutputStream(clientSocketScheduler.getOutputStream());
+            objectInputStreamScheduler = new ObjectInputStream(clientSocketScheduler.getInputStream());
+            objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            System.out.println("Мы на связи.");
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Вылетели на подключении");
         }
-        ois = new ObjectInputStream(clientSocket.getInputStream());
-        ous = new ObjectOutputStream(clientSocket.getOutputStream());
-
-        System.out.println("Мы на связи.");
-      /* Thread thread = new Thread(new ProcessList(actions));
-       thread.start();*/
     }
-    
-   /* public void chooseMethod(String str) throws IOException {
-        char number =  str.charAt(0);
-        switch (number){
-            case '1':
-                ous.writeObject(str);
-                ous.flush();
-                break;
-            case '2':
-                ous.writeObject(str);
-                ous.flush();
-                break;
-
-        }
-    }*/
 
     public String getStringListTask() throws IOException, ClassNotFoundException {
-        String one = "1";
-        /*actions.add(one);*/
-        ous.writeObject(one);
-        ous.flush();
-        return (String) ois.readObject();
-        //return "";
-}
+        objectOutputStream.writeObject("1");
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
+    }
 
     public String addTask(String task) throws IOException, ClassNotFoundException {
-        //actions.add(task);
-        ous.writeObject(task);
-        ous.flush();
-        return (String) ois.readObject();
+        objectOutputStream.writeObject(task);
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
     }
+
     public String updateTask(String task) throws IOException, ClassNotFoundException {
-        ous.writeObject(task);
-        ous.flush();
-        return (String) ois.readObject();
+        objectOutputStream.writeObject(task);
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
     }
+
     public String getTaskByDate(String str) throws IOException, ClassNotFoundException {
-        ous.writeObject(str);
-        ous.flush();
-        return (String) ois.readObject();
+        objectOutputStream.writeObject(str);
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
     }
+
     public String getTaskByDateType(String str) throws IOException, ClassNotFoundException {
-        ous.writeObject(str);
-        ous.flush();
-        return (String) ois.readObject();
+        objectOutputStream.writeObject(str);
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
     }
+
     public String deleteTaskById(String id) throws IOException, ClassNotFoundException {
-        ous.writeObject(id);
-        ous.flush();
-        return (String) ois.readObject();
+        objectOutputStream.writeObject(id);
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
     }
-    public String deleteOldTask() throws IOException, ClassNotFoundException {
-        String seven = "7";
-        ous.writeObject(seven);
-        ous.flush();
-        return (String) ois.readObject();
+
+    public Socket getClientSocket() {
+        return clientSocket;
     }
+
+    public String checkOldTask(String string) throws IOException, ClassNotFoundException {
+        objectOutputStream.writeObject(string);
+        objectOutputStream.flush();
+        return (String) objectInputStream.readObject();
+    }
+
+    public void deleteOldTask() throws IOException, ClassNotFoundException {
+        objectOutputStream.writeObject("delete");
+        objectOutputStream.flush();
+    }
+
     public void exit() throws IOException {
-        ous.writeObject("8");
-        ous.flush();
+        objectOutputStream.writeObject("8");
+        objectOutputStream.flush();
     }
 }
