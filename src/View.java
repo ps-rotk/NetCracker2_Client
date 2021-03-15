@@ -83,7 +83,6 @@ public class View extends Thread {
                         break;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 System.out.println();
                 System.out.println("Что-то пошло не так. Введите число, равное пункту меню.");
             }
@@ -93,120 +92,152 @@ public class View extends Thread {
 
     //1
     public void printListTask() throws IOException, ClassNotFoundException {
-        System.out.println(client.getStringListTask());
+        try {
+            System.out.println(client.getStringListTask());
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
+        }
     }
 
     //2
     public void addTask() throws IOException, ClassNotFoundException {
-        String str = "2";
-        Scanner in = new Scanner(System.in);
-        String date = checkDate();
-        if (date == null) {
-            return;
+        try {
+            String str = "2";
+            Scanner in = new Scanner(System.in);
+            String date = checkDate();
+            if (date == null) {
+                return;
+            }
+            String time = checkTime();
+            if (time == null) {
+                return;
+            }
+            System.out.println("Введите тип задачи");
+            String type = in.nextLine();
+            System.out.println("Введите заметку");
+            String text = in.nextLine();
+            str += "\n" + date + "\n" + time + "\n" + type + "\n" + text;
+            System.out.println(client.addTask(str));
+            System.out.println();
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
         }
-        String time = checkTime();
-        if (time == null) {
-            return;
-        }
-        System.out.println("Введите тип задачи");
-        String type = in.nextLine();
-        System.out.println("Введите заметку");
-        String text = in.nextLine();
-        str += "\n" + date + "\n" + time + "\n" + type + "\n" + text;
-        System.out.println(client.addTask(str));
-        System.out.println();
     }
 
     //3
     public void updateTask() throws IOException, ClassNotFoundException {
-        String str = "3\n";
-        System.out.println("Введите ID задачи, который хотите изменить");
-        Scanner inId = new Scanner(System.in);
-        int ID = inId.nextInt();
-        str += ID + "\n";
-        Scanner in = new Scanner(System.in);
-        String date = checkDate();
-        if (date == null) {
-            return;
+        try {
+            String str = "3\n";
+            System.out.println("Введите ID задачи, который хотите изменить");
+            Scanner inId = new Scanner(System.in);
+            int ID = inId.nextInt();
+            str += ID + "\n";
+            Scanner in = new Scanner(System.in);
+            String date = checkDate();
+            if (date == null) {
+                return;
+            }
+            String time = checkTime();
+            if (time == null) {
+                return;
+            }
+            System.out.println("Введите тип задачи");
+            String type = in.nextLine();
+            System.out.println("Введите заметку");
+            String text = in.nextLine();
+            str += date + "\n" + time + "\n" + type + "\n" + text;
+            System.out.println(client.updateTask(str));
+            System.out.println();
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
         }
-        String time = checkTime();
-        if (time == null) {
-            return;
-        }
-        System.out.println("Введите тип задачи");
-        String type = in.nextLine();
-        System.out.println("Введите заметку");
-        String text = in.nextLine();
-        str += date + "\n" + time + "\n" + type + "\n" + text;
-        System.out.println(client.updateTask(str));
-        System.out.println();
     }
 
     //4
     public void getTaskByDate() throws IOException, ClassNotFoundException {
-        String str = "4\n";
-        String date = checkDate();
-        if (date == null) {
-            return;
+        try {
+            String str = "4\n";
+            String date = checkDate();
+            if (date == null) {
+                return;
+            }
+            str += date;
+            System.out.println(client.getTaskByDate(str));
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
         }
-        str += date;
-        System.out.println(client.getTaskByDate(str));
     }
 
     //5
     public void getTaskByDateType() throws IOException, ClassNotFoundException {
-        String str = "5\n";
-        Scanner in = new Scanner(System.in);
-        String date = checkDate();
-        if (date == null) {
-            return;
+        try {
+            String str = "5\n";
+            Scanner in = new Scanner(System.in);
+            String date = checkDate();
+            if (date == null) {
+                return;
+            }
+            str += date;
+            System.out.println("Введите тип задачи");
+            String type = in.nextLine();
+            str += "\n" + type;
+            System.out.println(client.getTaskByDateType(str));
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
         }
-        str += date;
-        System.out.println("Введите тип задачи");
-        String type = in.nextLine();
-        str += "\n" + type;
-        System.out.println(client.getTaskByDateType(str));
     }
 
     //6
     //доделать удаление при не существующем id
     public void deleteTaskById() throws IOException, ClassNotFoundException {
         try {
-            String str = "6\n";
-            System.out.println("Введите id задачи, которую хотите удалить");
-            Scanner in = new Scanner(System.in);
-            int id = in.nextInt();
-            str += id;
-            System.out.println(client.deleteTaskById(str));
-        } catch (InputMismatchException o) {
-            System.out.println("Введено неправльное значение id.");
+            try {
+                String str = "6\n";
+                System.out.println("Введите id задачи, которую хотите удалить");
+                Scanner in = new Scanner(System.in);
+                int id = in.nextInt();
+                str += id;
+                System.out.println(client.deleteTaskById(str));
+            } catch (InputMismatchException o) {
+                System.out.println("Введено неправльное значение id.");
+            }
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
         }
     }
 
     //7
     public void deleteOldTask() throws IOException, ClassNotFoundException {
-        System.out.println("Проверка задач...");
-        String deleteList = client.checkOldTask("7");
-        if (deleteList != null && !deleteList.equals("")) {
-            System.out.println("Следующие задачи устарели или были выполнены:");
-            System.out.println(deleteList);
-            System.out.println("Желаете удалить из списка эти задачи? Y для удаления:");
-            Scanner dl = new Scanner(System.in);
-            String del = dl.nextLine();
-            if (del.equals("Y")) {
-                System.out.println("Вы выбрали удаление задач. \nУдаляю...");
-                client.deleteOldTask();
+        try {
+            System.out.println("Проверка задач...");
+            String deleteList = client.checkOldTask("7");
+            if (deleteList != null && !deleteList.equals("")) {
+                System.out.println("Следующие задачи устарели или были выполнены:");
+                System.out.println(deleteList);
+                System.out.println("Желаете удалить из списка эти задачи? Y для удаления:");
+                Scanner dl = new Scanner(System.in);
+                String del = dl.nextLine();
+                if (del.equals("Y")) {
+                    System.out.println("Вы выбрали удаление задач. \nУдаляю...");
+                    client.deleteOldTask();
+                } else {
+                    System.out.println("Вы выбрали не удалять");
+                }
             } else {
-                System.out.println("Вы выбрали не удалять");
+                System.out.println("Устареших задач не обнаружено");
             }
-        } else {
-            System.out.println("Устареших задач не обнаружено");
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
         }
     }
 
     //8
     public void exit() throws IOException {
-        client.exit();
+        try {
+            client.exit();
+        } catch (Exception e) {
+            System.out.println("Соединение разорвано");
+        }
 
     }
 

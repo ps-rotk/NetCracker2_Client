@@ -12,50 +12,8 @@ public class Client {
     ObjectInputStream objectInputStreamScheduler;
     ObjectOutputStream objectOutputStreamScheduler;
 
-    /*public class ProcessList implements Runnable {
-
-        private final ArrayList<String> actions;
-
-        public ProcessList(ArrayList<String> aList) {
-            this.actions = aList;
-        }
-
-        public void run() {
-            String str, message;
-            System.out.println("Мы в ране");
-            while (true){
-                //System.out.println("Размер актионс внутри вайла " + this.actions.size());
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    if (actions.size() > 0){
-
-                    str = actions.get(0);
-                    chooseMethod(str);
-                    message = (String) objectInputStream.readObject();
-                    String[] arr = message.split("_");
-                    while(arr[0].equals("Alert")){
-                        System.out.println(arr[1]); // вызвать метод вывода этой строки во view
-                        message = (String) objectInputStream.readObject();
-                        arr = message.split("_");
-                    }
-                    System.out.println(arr[1]);
-                        System.out.flush();
-                    actions.remove(0);
-                }}
-                catch (Exception e){
-                    e.printStackTrace();
-                    System.out.println("Беда");
-                }
-            }
-        }
-    }*/
 
     public Client() throws IOException, ClassNotFoundException {
-        // actions = new ArrayList<>();
         start();
     }
 
@@ -77,7 +35,6 @@ public class Client {
             objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             System.out.println("Мы на связи.");
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Вылетели на подключении");
         }
     }
