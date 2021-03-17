@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -95,7 +96,7 @@ public class View extends Thread {
         try {
             System.out.println(client.getStringListTask());
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
@@ -120,7 +121,7 @@ public class View extends Thread {
             System.out.println(client.addTask(str));
             System.out.println();
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
@@ -149,7 +150,7 @@ public class View extends Thread {
             System.out.println(client.updateTask(str));
             System.out.println();
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
@@ -164,7 +165,7 @@ public class View extends Thread {
             str += date;
             System.out.println(client.getTaskByDate(str));
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
@@ -183,7 +184,7 @@ public class View extends Thread {
             str += "\n" + type;
             System.out.println(client.getTaskByDateType(str));
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
@@ -202,7 +203,7 @@ public class View extends Thread {
                 System.out.println("Введено неправльное значение id.");
             }
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
@@ -227,16 +228,16 @@ public class View extends Thread {
                 System.out.println("Устареших задач не обнаружено");
             }
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            Reconnect();
         }
     }
 
     //8
-    public void exit() throws IOException {
+    public void exit() throws IOException, ClassNotFoundException {
         try {
             client.exit();
         } catch (Exception e) {
-            System.out.println("Соединение разорвано");
+            //Reconnect();
         }
 
     }
@@ -301,5 +302,19 @@ public class View extends Thread {
 
     public void isNotification(String task) {
         System.out.println(task);
+    }
+    public void Reconnect() throws IOException, ClassNotFoundException {
+        System.out.println("Соединение разорвано");
+        System.out.println("Переподключиться к серверу снова? (Введите Y для переподключения)");
+        Scanner in = new Scanner(System.in);
+        String y = in.nextLine();
+        if (y.equals("Y")){
+            client.closeSockets();
+            client.start();
+        }else{
+            go = true;
+            scheduler.interrupt();
+            exit();
+        }
     }
 }

@@ -1,3 +1,5 @@
+import main.Connection;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -11,7 +13,7 @@ public class Client {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStreamScheduler;
     ObjectOutputStream objectOutputStreamScheduler;
-
+    Connection connection;
 
     public Client() throws IOException, ClassNotFoundException {
         start();
@@ -27,8 +29,9 @@ public class Client {
 
     public void start() throws IOException, ClassNotFoundException {
         try {
-            clientSocket = new Socket("localhost", 1024);
-            clientSocketScheduler = new Socket("localhost", 1025);
+            getServerConnection();
+            clientSocket = new Socket("localhost", connection.getClientConnection());
+            clientSocketScheduler = new Socket("localhost", connection.getSchedulerConnection());
             objectOutputStreamScheduler = new ObjectOutputStream(clientSocketScheduler.getOutputStream());
             objectInputStreamScheduler = new ObjectInputStream(clientSocketScheduler.getInputStream());
             objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -37,6 +40,13 @@ public class Client {
         } catch (IOException e) {
             System.out.println("Вылетели на подключении");
         }
+    }
+
+    public void getServerConnection() throws IOException, ClassNotFoundException {
+        Socket connectionSocket = new Socket("localhost",1024);
+        ObjectInputStream ois = new ObjectInputStream(connectionSocket.getInputStream());
+        connection  = (Connection) ois.readObject();
+        connectionSocket.close();
     }
 
     public String getStringListTask() throws IOException, ClassNotFoundException {
@@ -93,5 +103,10 @@ public class Client {
     public void exit() throws IOException {
         objectOutputStream.writeObject("8");
         objectOutputStream.flush();
+        closeSockets();
+    }
+    public void closeSockets() throws IOException {
+        clientSocket.close();
+        clientSocketScheduler.close();
     }
 }
