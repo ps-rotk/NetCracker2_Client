@@ -51,8 +51,8 @@ public class Scheduler extends Thread implements IObservable {
             try{
                 String task = (String) objectInputStreamScheduler.readObject();
                 notifyObservers(task);
-            } catch (Exception e) {
-                return;
+            } catch (IOException | ClassNotFoundException e) {
+                continue;
             }
         }
     }

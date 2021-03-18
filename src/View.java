@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketException;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -80,166 +82,151 @@ public class View extends Thread {
                         exit();
                         break;
                     default:
-                        System.out.println("Неверное число, повторите ввод");
-                        break;
+                        System.out.println();
+                        System.out.println("Что-то пошло не так. Введите число, равное пункту меню.");
                 }
-            } catch (Exception e) {
-                System.out.println();
+            } catch (SocketException e) {
+                reconnect();
+            }
+            catch (NumberFormatException e){
                 System.out.println("Что-то пошло не так. Введите число, равное пункту меню.");
             }
+
         }
         System.out.println("Работа программы окончена");
     }
 
     //1
     public void printListTask() throws IOException, ClassNotFoundException {
-        try {
-            System.out.println(client.getStringListTask());
-        } catch (Exception e) {
-            Reconnect();
-        }
+
+        System.out.println(client.getStringListTask());
+
     }
 
     //2
     public void addTask() throws IOException, ClassNotFoundException {
-        try {
-            String str = "2";
-            Scanner in = new Scanner(System.in);
-            String date = checkDate();
-            if (date == null) {
-                return;
-            }
-            String time = checkTime();
-            if (time == null) {
-                return;
-            }
-            System.out.println("Введите тип задачи");
-            String type = in.nextLine();
-            System.out.println("Введите заметку");
-            String text = in.nextLine();
-            str += "\n" + date + "\n" + time + "\n" + type + "\n" + text;
-            System.out.println(client.addTask(str));
-            System.out.println();
-        } catch (Exception e) {
-            Reconnect();
+
+        String str = "2";
+        Scanner in = new Scanner(System.in);
+        String date = checkDate();
+        if (date == null) {
+            return;
         }
+        String time = checkTime();
+        if (time == null) {
+            return;
+        }
+        System.out.println("Введите тип задачи");
+        String type = in.nextLine();
+        System.out.println("Введите заметку");
+        String text = in.nextLine();
+        str += "\n" + date + "\n" + time + "\n" + type + "\n" + text;
+        System.out.println(client.addTask(str));
+        System.out.println();
+
     }
 
     //3
     public void updateTask() throws IOException, ClassNotFoundException {
-        try {
-            String str = "3\n";
-            System.out.println("Введите ID задачи, который хотите изменить");
-            Scanner inId = new Scanner(System.in);
-            int ID = inId.nextInt();
-            str += ID + "\n";
-            Scanner in = new Scanner(System.in);
-            String date = checkDate();
-            if (date == null) {
-                return;
-            }
-            String time = checkTime();
-            if (time == null) {
-                return;
-            }
-            System.out.println("Введите тип задачи");
-            String type = in.nextLine();
-            System.out.println("Введите заметку");
-            String text = in.nextLine();
-            str += date + "\n" + time + "\n" + type + "\n" + text;
-            System.out.println(client.updateTask(str));
-            System.out.println();
-        } catch (Exception e) {
-            Reconnect();
+
+        String str = "3\n";
+        System.out.println("Введите ID задачи, который хотите изменить");
+        Scanner inId = new Scanner(System.in);
+        int ID = inId.nextInt();
+        str += ID + "\n";
+        Scanner in = new Scanner(System.in);
+        String date = checkDate();
+        if (date == null) {
+            return;
         }
+        String time = checkTime();
+        if (time == null) {
+            return;
+        }
+        System.out.println("Введите тип задачи");
+        String type = in.nextLine();
+        System.out.println("Введите заметку");
+        String text = in.nextLine();
+        str += date + "\n" + time + "\n" + type + "\n" + text;
+        System.out.println(client.updateTask(str));
+        System.out.println();
+
     }
 
     //4
     public void getTaskByDate() throws IOException, ClassNotFoundException {
-        try {
-            String str = "4\n";
-            String date = checkDate();
-            if (date == null) {
-                return;
-            }
-            str += date;
-            System.out.println(client.getTaskByDate(str));
-        } catch (Exception e) {
-            Reconnect();
+
+        String str = "4\n";
+        String date = checkDate();
+        if (date == null) {
+            return;
         }
+        str += date;
+        System.out.println(client.getTaskByDate(str));
+
     }
 
     //5
     public void getTaskByDateType() throws IOException, ClassNotFoundException {
-        try {
-            String str = "5\n";
-            Scanner in = new Scanner(System.in);
-            String date = checkDate();
-            if (date == null) {
-                return;
-            }
-            str += date;
-            System.out.println("Введите тип задачи");
-            String type = in.nextLine();
-            str += "\n" + type;
-            System.out.println(client.getTaskByDateType(str));
-        } catch (Exception e) {
-            Reconnect();
+
+        String str = "5\n";
+        Scanner in = new Scanner(System.in);
+        String date = checkDate();
+        if (date == null) {
+            return;
         }
+        str += date;
+        System.out.println("Введите тип задачи");
+        String type = in.nextLine();
+        str += "\n" + type;
+        System.out.println(client.getTaskByDateType(str));
+
     }
 
     //6
     //доделать удаление при не существующем id
     public void deleteTaskById() throws IOException, ClassNotFoundException {
+
         try {
-            try {
-                String str = "6\n";
-                System.out.println("Введите id задачи, которую хотите удалить");
-                Scanner in = new Scanner(System.in);
-                int id = in.nextInt();
-                str += id;
-                System.out.println(client.deleteTaskById(str));
-            } catch (InputMismatchException o) {
-                System.out.println("Введено неправльное значение id.");
-            }
-        } catch (Exception e) {
-            Reconnect();
+            String str = "6\n";
+            System.out.println("Введите id задачи, которую хотите удалить");
+            Scanner in = new Scanner(System.in);
+            int id = in.nextInt();
+            str += id;
+            System.out.println(client.deleteTaskById(str));
+        } catch (InputMismatchException o) {
+            System.out.println("Введено неправльное значение id.");
         }
+
     }
 
     //7
     public void deleteOldTask() throws IOException, ClassNotFoundException {
-        try {
-            System.out.println("Проверка задач...");
-            String deleteList = client.checkOldTask("7");
-            if (deleteList != null && !deleteList.equals("")) {
-                System.out.println("Следующие задачи устарели или были выполнены:");
-                System.out.println(deleteList);
-                System.out.println("Желаете удалить из списка эти задачи? Y для удаления:");
-                Scanner dl = new Scanner(System.in);
-                String del = dl.nextLine();
-                if (del.equals("Y")) {
-                    System.out.println("Вы выбрали удаление задач. \nУдаляю...");
-                    client.deleteOldTask();
-                } else {
-                    System.out.println("Вы выбрали не удалять");
-                }
+
+        System.out.println("Проверка задач...");
+        String deleteList = client.checkOldTask("7");
+        if (deleteList != null && !deleteList.equals("")) {
+            System.out.println("Следующие задачи устарели или были выполнены:");
+            System.out.println(deleteList);
+            System.out.println("Желаете удалить из списка эти задачи? Y для удаления:");
+            Scanner dl = new Scanner(System.in);
+            String del = dl.nextLine();
+            if (del.equals("Y")) {
+                System.out.println("Вы выбрали удаление задач. \nУдаляю...");
+                client.deleteOldTask();
             } else {
-                System.out.println("Устареших задач не обнаружено");
+                System.out.println("Вы выбрали не удалять");
             }
-        } catch (Exception e) {
-            Reconnect();
+        } else {
+            System.out.println("Устареших задач не обнаружено");
         }
+
     }
 
     //8
-    public void exit() throws IOException, ClassNotFoundException {
-        try {
-            client.exit();
-        } catch (Exception e) {
-            //Reconnect();
-        }
-
+    public void exit() throws IOException {
+        client.exit();
+        scheduler.setStop(true);
     }
 
     private String checkDate() {
@@ -303,15 +290,16 @@ public class View extends Thread {
     public void isNotification(String task) {
         System.out.println(task);
     }
-    public void Reconnect() throws IOException, ClassNotFoundException {
+
+    public void reconnect() throws IOException, ClassNotFoundException {
         System.out.println("Соединение разорвано");
         System.out.println("Переподключиться к серверу снова? (Введите Y для переподключения)");
         Scanner in = new Scanner(System.in);
         String y = in.nextLine();
-        if (y.equals("Y")){
+        if (y.equals("Y")) {
             client.closeSockets();
             client.start();
-        }else{
+        } else {
             go = true;
             scheduler.interrupt();
             exit();

@@ -15,7 +15,7 @@ public class Client {
     ObjectOutputStream objectOutputStreamScheduler;
     Connection connection;
 
-    public Client() throws IOException, ClassNotFoundException {
+    public Client() throws ClassNotFoundException {
         start();
     }
 
@@ -27,9 +27,10 @@ public class Client {
         return objectOutputStreamScheduler;
     }
 
-    public void start() throws IOException, ClassNotFoundException {
+    public void start() throws ClassNotFoundException {
         try {
             getServerConnection();
+            System.out.println(connection.getClientConnection()+ "    "+connection.getSchedulerConnection());
             clientSocket = new Socket("localhost", connection.getClientConnection());
             clientSocketScheduler = new Socket("localhost", connection.getSchedulerConnection());
             objectOutputStreamScheduler = new ObjectOutputStream(clientSocketScheduler.getOutputStream());
@@ -95,7 +96,7 @@ public class Client {
         return (String) objectInputStream.readObject();
     }
 
-    public void deleteOldTask() throws IOException, ClassNotFoundException {
+    public void deleteOldTask() throws IOException {
         objectOutputStream.writeObject("delete");
         objectOutputStream.flush();
     }
