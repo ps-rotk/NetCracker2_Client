@@ -11,14 +11,24 @@ public class Scheduler extends Thread implements IObservable {
     private List<IObserver> observers;
     private boolean stop;
     private Client client;
-    ObjectInputStream objectInputStreamScheduler;
+    private ObjectInputStream objectInputStreamScheduler;
+
 
     public Scheduler(Client client) {
         observers = new ArrayList<>();
         stop = false;
         this.client = client;
-        objectInputStreamScheduler = this.client.getObjectInputStreamScheduler();
+        objectInputStreamScheduler = client.getObjectInputStreamScheduler();
         this.start();
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+        objectInputStreamScheduler = client.getObjectInputStreamScheduler();
     }
 
     public boolean isStop() {
@@ -46,10 +56,15 @@ public class Scheduler extends Thread implements IObservable {
         }
     }
 
-    public void run(){
-        while (!stop){
-            try{
+    public void run() {
+        while (!stop) {
+            try {
                 String task = (String) objectInputStreamScheduler.readObject();
+                try {
+                    sleep(2);
+                } catch (InterruptedException e) {
+                    continue;
+                }
                 notifyObservers(task);
             } catch (IOException | ClassNotFoundException e) {
                 continue;

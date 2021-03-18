@@ -299,6 +299,7 @@ public class View extends Thread {
         if (y.equals("Y")) {
             client.closeSockets();
             client.start();
+            scheduler.setClient(client);
         } else {
             go = true;
             scheduler.interrupt();
